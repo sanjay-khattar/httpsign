@@ -1,11 +1,11 @@
 /**
  * 
  */
-package tests.sanjay.http.sign;
+package net.sanjay.http.sign;
 
-import static tests.sanjay.utils.EncodingUtils.hex;
-import static tests.sanjay.utils.EncodingUtils.hmacSha256;
-import static tests.sanjay.utils.EncodingUtils.sha256;
+import static net.sanjay.utils.EncodingUtils.hex;
+import static net.sanjay.utils.EncodingUtils.hmacSha256;
+import static net.sanjay.utils.EncodingUtils.sha256;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -15,40 +15,42 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import tests.sanjay.utils.EncodingUtils;
-import tests.sanjay.utils.StringUtils;
+import net.sanjay.utils.EncodingUtils;
+import net.sanjay.utils.StringUtils;
 
 /**
  * @author sanjaykdev
  *
  */
 public class HttpSignUtils {
-	
+
 	public static final String NEW_LINE = "\\n\n";
-	
-    private HttpSignUtils() {}
-	
+
+	private HttpSignUtils() {
+	}
+
 	/**
 	 * Canonicalize HTTP Request.
 	 * <p>
 	 * Canonical Request Format:
+	 * 
 	 * <pre>
 	 * {@code
 	 *		<HTTPMethod>\n
 	 *		<CanonicalURI>\n
 	 *		<CanonicalQueryString>\n
 	 *		<CanonicalHeaders>\n
-     * 		<HashedPayload>
-     * }
+	 * 		<HashedPayload>
+	 * }
 	 * </pre>
 	 *
 	 * @param httpRequest
 	 *
-	 * @return 
+	 * @return
 	 */
 	public static final String canonicalizeHttpRequest(String httpRequest) {
 		String canonicalHttpRequestString = null;
-		
+
 		CanonicalHttpRequest canonicalHttpRequest = null;
 		String payload = "";
 
@@ -57,7 +59,7 @@ public class HttpSignUtils {
 			canonicalHttpRequest = new CanonicalHttpRequest();
 
 			String[] lines = httpRequest.split("[\\r\\n]");
-			boolean headersEnded = false;			
+			boolean headersEnded = false;
 			for (String line : lines) {
 				line = line.trim();
 				boolean isBlankLine = line.startsWith("\\r\\n");
@@ -65,7 +67,7 @@ public class HttpSignUtils {
 					headersEnded = true;
 					continue;
 				}
-				
+
 				if (HttpUtils.isStartLine(line)) {
 					String httpMethod = HttpUtils.parseHttpMethod(line);
 					canonicalHttpRequest.setHttpMethod(httpMethod);
@@ -78,8 +80,8 @@ public class HttpSignUtils {
 					}
 					continue;
 				}
-				
-				if (!headersEnded) {   // Is Header Line
+
+				if (!headersEnded) { // Is Header Line
 					Map<String, String> header = HttpUtils.parseHeader(line);
 					if (header != null) {
 						for (Entry<String, String> headerEntry : header.entrySet()) {
@@ -91,20 +93,18 @@ public class HttpSignUtils {
 							canonicalHttpRequest.addHeader(headerName, headerValue);
 						}
 					}
-				}
-				else {     // Is Body
+				} else { // Is Body
 					payload = line;
 				}
-				
+
 			}
-			
+
 			String hashedPayload = hashedValue(payload);
 			canonicalHttpRequest.setHashedPayload(hashedPayload);
 
-			
 			String canonicalQueryString = getCanonicalQueryString(canonicalHttpRequest.getQueryParams());
 			String canonicalHeaders = getCanonicalHeaders(canonicalHttpRequest.getHeaders());
-			
+
 			StringBuilder sb = new StringBuilder();
 			sb.append(canonicalHttpRequest.getHttpMethod());
 			sb.append(NEW_LINE);
@@ -115,26 +115,25 @@ public class HttpSignUtils {
 			sb.append(canonicalHeaders);
 			sb.append(NEW_LINE);
 			sb.append(canonicalHttpRequest.getHashedPayload());
-			
+
 			canonicalHttpRequestString = sb.toString();
-			
+
 		}
-		
-		
+
 		return canonicalHttpRequestString;
 	}
 
 	public static final String getCanonicalQueryString(Map<String, List<String>> queryParams) {
 		String canonicalQueryString = "";
-		
+
 		if (queryParams != null) {
 			Set<String> paramNamesSet = queryParams.keySet();
 			List<String> paramNamesList = new ArrayList<>(paramNamesSet);
 			paramNamesList.sort(Comparator.naturalOrder());
 			int numParams = paramNamesList.size();
-			
+
 			StringBuilder sb = new StringBuilder();
-			
+
 			int count = 0;
 			for (String paramName : paramNamesList) {
 				count++;
@@ -146,12 +145,12 @@ public class HttpSignUtils {
 				List<String> values = queryParams.get(paramName);
 				String valuesString = values.stream().map(v -> uriEncode(v)).collect(Collectors.joining("%2C"));
 				sb.append(valuesString);
-				
+
 			}
-			
+
 			canonicalQueryString = sb.toString();
 		}
-		
+
 		return canonicalQueryString;
 	}
 
@@ -160,7 +159,7 @@ public class HttpSignUtils {
 	 */
 	public static final String getCanonicalHeaders(Map<String, List<String>> headers) {
 		String canonicalHeaders = "";
-		
+
 		if (headers != null) {
 			Set<String> headerNamesSet = headers.keySet();
 			List<String> headerNamesList = new ArrayList<>(headerNamesSet);
@@ -176,26 +175,26 @@ public class HttpSignUtils {
 			}
 			canonicalHeaders = sb.toString();
 		}
-		
+
 		return canonicalHeaders;
 	}
 
 	public static final String hashedValue(String text) {
 		String hashedValue = null;
-		
+
 		hashedValue = StringUtils.lowerCase(hex(sha256(text)));
-		
+
 		return hashedValue;
 	}
 
 	public static final String hmacHashedValue(String key, String text) {
 		String hmacHashedValue = null;
-		
+
 		hmacHashedValue = StringUtils.lowerCase(hex(hmacSha256(key, text)));
-		
+
 		return hmacHashedValue;
 	}
-	
+
 	public static String lowerCase(String s) {
 		return StringUtils.lowerCase(s);
 	}

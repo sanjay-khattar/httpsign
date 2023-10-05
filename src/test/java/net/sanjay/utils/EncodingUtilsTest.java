@@ -1,9 +1,9 @@
 /**
  * 
  */
-package tests.sanjay.utils;
+package net.sanjay.utils;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.charset.StandardCharsets;
 
@@ -56,7 +56,6 @@ class EncodingUtilsTest {
 		byte[]  bytes = testString.getBytes(StandardCharsets.UTF_8.toString());
 		String hex = EncodingUtils.hex(bytes);
 		assertEquals(hex, hex);
-		
 	}
 
 }

@@ -1,15 +1,14 @@
 /**
  * 
  */
-package tests.sanjay.utils;
+package net.sanjay.utils;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -48,7 +47,8 @@ class StringUtilsTest {
 	}
 
 	/**
-	 * Test method for {@link sanjay.tests.utils.StringUtils#lowerCase(java.lang.String)}.
+	 * Test method for
+	 * {@link sanjay.tests.utils.StringUtils#lowerCase(java.lang.String)}.
 	 */
 	@ParameterizedTest
 	@MethodSource("lowerCaseTestDataProvider")
@@ -58,7 +58,8 @@ class StringUtilsTest {
 	}
 
 	/**
-	 * Test method for {@link sanjay.tests.utils.StringUtils#trim(java.lang.String)}.
+	 * Test method for
+	 * {@link sanjay.tests.utils.StringUtils#trim(java.lang.String)}.
 	 */
 	@ParameterizedTest
 	@MethodSource("trimTestDataProvider")
@@ -66,25 +67,24 @@ class StringUtilsTest {
 		String actual = StringUtils.trim(s);
 		assertEquals(expected, actual);
 	}
-	
+
 	static String[][] lowerCaseTestDataProvider() {
 		String[][] strings = {
-				{"", ""},
-				{"ABC", "abc"},
-				{"AbCd", "abcd"},
-				{"123", "123"}
-			};
+				{ "", "" },
+				{ "ABC", "abc" },
+				{ "AbCd", "abcd" },
+				{ "123", "123" }
+		};
 		return strings;
 	}
 
 	static String[][] trimTestDataProvider() {
 		String[][] strings = {
-				{"1", "1"},
-				{"12\r\n", "12"},
-				{"ab\\r\\n", "ab"}
-			};
+				{ "1", "1" },
+				{ "12\r\n", "12" },
+				{ "ab\\r\\n", "ab" }
+		};
 		return strings;
 	}
-
 
 }

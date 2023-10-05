@@ -1,7 +1,7 @@
 /**
  * 
  */
-package tests.sanjay.http.sign;
+package net.sanjay.http.sign;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,17 +15,17 @@ import java.util.Map;
 public class CanonicalHttpRequest {
 
 	private String httpMethod;
-	
+
 	private String canonicalUri;
-	
+
 	private String canonicalQueryString;
-	
+
 	private Map<String, List<String>> queryParams;
-	
+
 	private Map<String, List<String>> headers;
-	
+
 	private String hashedPayload;
-	
+
 	/**
 	 * 
 	 */
@@ -109,38 +109,35 @@ public class CanonicalHttpRequest {
 	public String getHashedPayload() {
 		return hashedPayload;
 	}
-	
+
 	public boolean addQueryParam(String name, String value) {
 		boolean added = false;
-		
+
 		if (queryParams == null) {
 			queryParams = new HashMap<>();
 		}
-		
-//		queryParams.merge(name, Arrays.asList(value), );
-		
-	
+
 		List<String> values = queryParams.get(name);
-		
+
 		if (values == null) {
 			values = new ArrayList<>();
 		}
 
 		added = values.add(value);
-		
+
 		return added;
 	}
 
 	public boolean addHeader(String name, String value) {
 		boolean added = false;
-		
+
 		if (headers == null) {
 			headers = new HashMap<>();
 		}
-		
+
 		List<String> values = headers.computeIfAbsent(name, k -> new ArrayList<>());
 		added = values.add(value);
-				
+
 		return added;
 	}
 
@@ -167,7 +164,5 @@ public class CanonicalHttpRequest {
 		builder.append("]");
 		return builder.toString();
 	}
-	
-	
 
 }

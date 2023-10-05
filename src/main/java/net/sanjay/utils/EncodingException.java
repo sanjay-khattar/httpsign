@@ -1,4 +1,4 @@
-package tests.sanjay.utils;
+package net.sanjay.utils;
 
 public class EncodingException extends RuntimeException {
 
