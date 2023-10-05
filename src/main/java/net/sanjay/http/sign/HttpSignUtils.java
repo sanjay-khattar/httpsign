@@ -65,58 +65,41 @@ public class HttpSignUtils {
 				boolean isBlankLine = line.startsWith("\\r\\n");
 				if (isBlankLine) {
 					headersEnded = true;
-					continue;
 				}
 
-				if (HttpUtils.isStartLine(line)) {
-					String httpMethod = HttpUtils.parseHttpMethod(line);
-					canonicalHttpRequest.setHttpMethod(httpMethod);
-					String uri = HttpUtils.parseUri(line);
-					canonicalHttpRequest.setCanonicalUri(uri);
-					String queryString = HttpUtils.parseQueryString(line);
-					if (queryString != null) {
-						Map<String, List<String>> queryParams = HttpUtils.parseQueryParams(queryString);
-						canonicalHttpRequest.setQueryParams(queryParams);
-					}
-					continue;
+				else if (HttpUtils.isStartLine(line)) {
+					canonicalHttpRequest = parseStartLine(line);
 				}
-
-				if (!headersEnded) { // Is Header Line
-					Map<String, String> header = HttpUtils.parseHeader(line);
-					if (header != null) {
-						for (Entry<String, String> headerEntry : header.entrySet()) {
-							String headerName = lowerCase(headerEntry.getKey());
-							String headerValue = headerEntry.getValue();
-							headerValue = headerValue.trim();
-							headerValue = headerValue.replace("\\r\\n", "");
-//							headerValue = trim(headerValue);
-							canonicalHttpRequest.addHeader(headerName, headerValue);
-						}
-					}
+				else if (!headersEnded) { // Is Header Line
+					canonicalHttpRequest = parseHeaderLine(line, canonicalHttpRequest);
 				} else { // Is Body
 					payload = line;
 				}
 
 			}
 
-			String hashedPayload = hashedValue(payload);
-			canonicalHttpRequest.setHashedPayload(hashedPayload);
+			if (canonicalHttpRequest != null) {
+				String hashedPayload = hashedValue(payload);
+				canonicalHttpRequest.setHashedPayload(hashedPayload);
 
-			String canonicalQueryString = getCanonicalQueryString(canonicalHttpRequest.getQueryParams());
-			String canonicalHeaders = getCanonicalHeaders(canonicalHttpRequest.getHeaders());
+				String canonicalQueryString = getCanonicalQueryString(
+						canonicalHttpRequest.getQueryParams());
+				String canonicalHeaders = getCanonicalHeaders(
+						canonicalHttpRequest.getHeaders());
 
-			StringBuilder sb = new StringBuilder();
-			sb.append(canonicalHttpRequest.getHttpMethod());
-			sb.append(NEW_LINE);
-			sb.append(canonicalHttpRequest.getCanonicalUri());
-			sb.append(NEW_LINE);
-			sb.append(canonicalQueryString);
-			sb.append(NEW_LINE);
-			sb.append(canonicalHeaders);
-			sb.append(NEW_LINE);
-			sb.append(canonicalHttpRequest.getHashedPayload());
+				StringBuilder sb = new StringBuilder();
+				sb.append(canonicalHttpRequest.getHttpMethod());
+				sb.append(NEW_LINE);
+				sb.append(canonicalHttpRequest.getCanonicalUri());
+				sb.append(NEW_LINE);
+				sb.append(canonicalQueryString);
+				sb.append(NEW_LINE);
+				sb.append(canonicalHeaders);
+				sb.append(NEW_LINE);
+				sb.append(canonicalHttpRequest.getHashedPayload());
 
-			canonicalHttpRequestString = sb.toString();
+				canonicalHttpRequestString = sb.toString();
+			}
 
 		}
 
@@ -170,8 +153,7 @@ public class HttpSignUtils {
 				List<String> values = headers.get(headerName);
 				String valuesString = values.stream().map(v -> trim(v)).collect(Collectors.joining(","));
 				sb.append(valuesString);
-				sb.append("\\n");
-				sb.append("\n");
+				sb.append(NEW_LINE);
 			}
 			canonicalHeaders = sb.toString();
 		}
@@ -179,10 +161,51 @@ public class HttpSignUtils {
 		return canonicalHeaders;
 	}
 
+	public static final CanonicalHttpRequest parseStartLine(String startLine) {
+		CanonicalHttpRequest canonicalHttpRequest = null;
+
+		if (HttpUtils.isStartLine(startLine)) {
+			canonicalHttpRequest = new CanonicalHttpRequest();
+			String httpMethod = HttpUtils.parseHttpMethod(startLine);
+			canonicalHttpRequest.setHttpMethod(httpMethod);
+			String uri = HttpUtils.parseUri(startLine);
+			canonicalHttpRequest.setCanonicalUri(uri);
+			String queryString = HttpUtils.parseQueryString(startLine);
+			if (queryString != null) {
+				Map<String, List<String>> queryParams = HttpUtils.parseQueryParams(queryString);
+				canonicalHttpRequest.setQueryParams(queryParams);
+			}
+		}
+
+		return canonicalHttpRequest;
+	}
+
+	public static final CanonicalHttpRequest parseHeaderLine(
+			String headerLine, CanonicalHttpRequest canonicalHttpRequest) {
+
+		if (canonicalHttpRequest == null) {
+			canonicalHttpRequest = new CanonicalHttpRequest();
+		}
+
+		Map<String, String> header = HttpUtils.parseHeader(headerLine);
+		if (header != null) {
+			for (Entry<String, String> headerEntry : header.entrySet()) {
+				String headerName = lowerCase(headerEntry.getKey());
+				String headerValue = headerEntry.getValue();
+				headerValue = headerValue.trim();
+				headerValue = headerValue.replace("\\r\\n", "");
+				canonicalHttpRequest.addHeader(headerName, headerValue);
+			}
+		}
+
+		return canonicalHttpRequest;
+	}
+
+
 	public static final String hashedValue(String text) {
 		String hashedValue = null;
 
-		hashedValue = StringUtils.lowerCase(hex(sha256(text)));
+		hashedValue = lowerCase(hex(sha256(text)));
 
 		return hashedValue;
 	}

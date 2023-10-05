@@ -22,10 +22,6 @@ public class EncodingUtils {
 	private EncodingUtils() {
 	}
 
-	public static String lowerCase(String s) {
-		return StringUtils.lowerCase(s);
-	}
-
 	public static final String hex(byte[] bytes) {
 		String hex = null;
 
@@ -49,7 +45,7 @@ public class EncodingUtils {
 		if (text != null) {
 			try {
 				final MessageDigest digest = MessageDigest.getInstance(SHA_256);
-				sha256 = digest.digest(text.getBytes());
+				sha256 = digest.digest(text.getBytes(StandardCharsets.UTF_8));
 			} catch (NoSuchAlgorithmException e) {
 				throw new EncodingException(e);
 			}
@@ -66,6 +62,10 @@ public class EncodingUtils {
 		}
 
 		return hmacSha256;
+	}
+
+	public static String lowerCase(String s) {
+		return StringUtils.lowerCase(s);
 	}
 
 	public static String trim(String s) {

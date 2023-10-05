@@ -130,18 +130,6 @@ class IHttpSignTest {
 	}
 	
 	/**
-	 * Parameterized Test method for {@link sanjay.tests.http.IHttpSign#getSignature(java.lang.String, java.lang.String, java.lang.String)}.
-	 */
-	@ParameterizedTest
-	@MethodSource("signatureTestDataProvider")
-	void testGetSignature(String httpRequest, String expectedSignature) {
-				
-		String actualSignature = httpSign.getSignature(testAccessKey, testSecretKey, httpRequest);
-		
-		assertEquals(expectedSignature, actualSignature);
-	}
-
-	/**
 	 * Parameterized Test method for {@link sanjay.tests.http.IHttpSign#canonicalizeHttpRequest(java.lang.String)}.
 	 */
 	@ParameterizedTest
@@ -156,7 +144,6 @@ class IHttpSignTest {
 	/**
 	 * Parameterized Test method for {@link sanjay.tests.http.IHttpSign#stringToSign(java.lang.String)}.
 	 */
-	@Disabled("Disabled until resolved")
 	@ParameterizedTest
 	@MethodSource("stringToSignTestDataProvider")
 	void testStringToSign(String httpRequest, String expectedStringToSign) {
@@ -164,6 +151,19 @@ class IHttpSignTest {
 		String actualStringToSign = httpSign.stringToSign(httpRequest);
 		
 		assertEquals(expectedStringToSign, actualStringToSign);
+	}
+
+	/**
+	 * Parameterized Test method for {@link sanjay.tests.http.IHttpSign#getSignature(java.lang.String, java.lang.String, java.lang.String)}.
+	 */
+	@ParameterizedTest
+	@MethodSource("signatureTestDataProvider")
+	void testGetSignature(String httpRequest, String expectedSignature) {
+
+		String actualSignature = httpSign.getSignature(
+				testAccessKey, testSecretKey, httpRequest);
+
+		assertEquals(expectedSignature, actualSignature);
 	}
 
 	/**

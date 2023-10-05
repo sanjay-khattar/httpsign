@@ -18,8 +18,6 @@ public class CanonicalHttpRequest {
 
 	private String canonicalUri;
 
-	private String canonicalQueryString;
-
 	private Map<String, List<String>> queryParams;
 
 	private Map<String, List<String>> headers;
@@ -59,20 +57,6 @@ public class CanonicalHttpRequest {
 	 */
 	public void setCanonicalUri(String canonicalUri) {
 		this.canonicalUri = canonicalUri;
-	}
-
-	/**
-	 * @return the canonicalQueryString
-	 */
-	public String getCanonicalQueryString() {
-		return canonicalQueryString;
-	}
-
-	/**
-	 * @param canonicalQueryString the canonicalQueryString to set
-	 */
-	public void setCanonicalQueryString(String canonicalQueryString) {
-		this.canonicalQueryString = canonicalQueryString;
 	}
 
 	/**
@@ -155,9 +139,9 @@ public class CanonicalHttpRequest {
 		builder.append(httpMethod);
 		builder.append(", canonicalUri=");
 		builder.append(canonicalUri);
-		builder.append(", canonicalQueryString=");
-		builder.append(canonicalQueryString);
-		builder.append(", headeers=");
+		builder.append(", queryParams=");
+		builder.append(queryParams);
+		builder.append(", headers=");
 		builder.append(headers);
 		builder.append(", hashedPayload=");
 		builder.append(hashedPayload);
