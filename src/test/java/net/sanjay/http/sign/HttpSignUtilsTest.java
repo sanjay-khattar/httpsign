@@ -68,11 +68,11 @@ class HttpSignUtilsTest {
 		String testSigningKey = "testkey";
 		String testText = "";
 
-		String expectedHashedValue = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+		String expectedHmacHashedValue = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
-		String actualHashedValue = HttpSignUtils.hmacHashedValue(testSigningKey, testText);
+		String actualHmacHashedValue = HttpSignUtils.hmacHashedValue(testSigningKey, testText);
 
-		assertEquals(expectedHashedValue, actualHashedValue);
+		assertEquals(expectedHmacHashedValue, actualHmacHashedValue);
 	}
 
 }

@@ -4,7 +4,6 @@
 package net.sanjay.utils;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -76,10 +75,7 @@ public class EncodingUtils {
 		String uriEncoded = null;
 
 		try {
-			uriEncoded = URLEncoder.encode(s, StandardCharsets.UTF_8.toString());
-			uriEncoded = uriEncoded.replace("%2B", "%20");
-			uriEncoded = uriEncoded.replace(",", "%2C");
-			uriEncoded = uriEncoded.replace("%25", "%");
+			uriEncoded = URIEncoder.encode(s, StandardCharsets.UTF_8.toString());
 		} catch (UnsupportedEncodingException e) {
 			throw new EncodingException(e);
 		}
