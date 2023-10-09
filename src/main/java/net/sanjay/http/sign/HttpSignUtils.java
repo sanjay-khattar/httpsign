@@ -79,7 +79,7 @@ public class HttpSignUtils {
 			}
 
 			if (canonicalHttpRequest != null) {
-				String hashedPayload = hashedValue(payload);
+				String hashedPayload = sha256HashValue(payload);
 				canonicalHttpRequest.setHashedPayload(hashedPayload);
 
 				String canonicalQueryString = getCanonicalQueryString(
@@ -202,20 +202,12 @@ public class HttpSignUtils {
 	}
 
 
-	public static final String hashedValue(String text) {
-		String hashedValue = null;
-
-		hashedValue = lowerCase(hex(sha256(text)));
-
-		return hashedValue;
+	public static final String sha256HashValue(String text) {
+		return lowerCase(hex(sha256(text)));
 	}
 
-	public static final String hmacHashedValue(String key, String text) {
-		String hmacHashedValue = null;
-
-		hmacHashedValue = StringUtils.lowerCase(hex(hmacSha256(key, text)));
-
-		return hmacHashedValue;
+	public static final String hmacSha256Value(String key, String text) {
+		return lowerCase(hex(hmacSha256(key, text)));
 	}
 
 	public static String lowerCase(String s) {

@@ -4,6 +4,7 @@
 package net.sanjay.http.sign;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -133,7 +134,7 @@ class IHttpSignTest {
 	 * Parameterized Test method for {@link sanjay.tests.http.IHttpSign#canonicalizeHttpRequest(java.lang.String)}.
 	 */
 	@ParameterizedTest
-	@MethodSource("canonicalTestDataProvider")
+	@MethodSource("net.sanjay.http.sign.IHttpSignTestDataProvider#canonicalTestDataProvider")
 	void testCanonicalizeHttpRequest(String httpRequest, String expectedCanonicalRequest) {
 	
 		String actualCanonicalRequest = httpSign.canonicalizeHttpRequest(httpRequest);
@@ -145,7 +146,7 @@ class IHttpSignTest {
 	 * Parameterized Test method for {@link sanjay.tests.http.IHttpSign#stringToSign(java.lang.String)}.
 	 */
 	@ParameterizedTest
-	@MethodSource("stringToSignTestDataProvider")
+	@MethodSource("net.sanjay.http.sign.IHttpSignTestDataProvider#stringToSignTestDataProvider")
 	void testStringToSign(String httpRequest, String expectedStringToSign) {
 		
 		String actualStringToSign = httpSign.stringToSign(httpRequest);
@@ -157,13 +158,27 @@ class IHttpSignTest {
 	 * Parameterized Test method for {@link sanjay.tests.http.IHttpSign#getSignature(java.lang.String, java.lang.String, java.lang.String)}.
 	 */
 	@ParameterizedTest
-	@MethodSource("signatureTestDataProvider")
+	@MethodSource("net.sanjay.http.sign.IHttpSignTestDataProvider#signatureTestDataProvider")
 	void testGetSignature(String httpRequest, String expectedSignature) {
 
 		String actualSignature = httpSign.getSignature(
 				testAccessKey, testSecretKey, httpRequest);
 
 		assertEquals(expectedSignature, actualSignature);
+	}
+
+	/**
+	 * Test that {@link HttpSignException} is thrown
+	 * when null 'accessKey' is passed to the method for
+	 * {@link sanjay.tests.http.IHttpSign#getSignature(java.lang.String, java.lang.String, java.lang.String)}.
+	 */
+	@Test
+	void testGetSignatureNullAccessKey() {
+		String testAccessKey = null;
+		String testHttpRequest = HTTP_REQUEST_1;
+
+		assertThrows(HttpSignException.class, () -> httpSign.getSignature(
+				testAccessKey, testSecretKey, testHttpRequest));
 	}
 
 	/**

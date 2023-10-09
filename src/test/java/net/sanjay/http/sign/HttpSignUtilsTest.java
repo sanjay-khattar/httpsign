@@ -47,21 +47,21 @@ class HttpSignUtilsTest {
 
 	/**
 	 * Test method for
-	 * {@link sanjay.tests.http.HttpSignUtils#hashedValue(java.lang.String)}.
+	 * {@link sanjay.tests.http.HttpSignUtils#sha256HashValue(java.lang.String)}.
 	 */
 	@Test
 	void testHashedValueEmptyString() {
 		String testText = "";
 		String expectedHashedValue = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
-		String actualHashedValue = HttpSignUtils.hashedValue(testText);
+		String actualHashedValue = HttpSignUtils.sha256HashValue(testText);
 
 		assertEquals(expectedHashedValue, actualHashedValue);
 	}
 
 	/**
 	 * Test method for
-	 * {@link sanjay.tests.http.HttpSignUtils#hmacHashedValue(java.lang.String, java.lang.String)}.
+	 * {@link sanjay.tests.http.HttpSignUtils#hmacSha256Value(java.lang.String, java.lang.String)}.
 	 */
 	@Test
 	void testHmacHashedValue() {
@@ -70,7 +70,7 @@ class HttpSignUtilsTest {
 
 		String expectedHmacHashedValue = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
-		String actualHmacHashedValue = HttpSignUtils.hmacHashedValue(testSigningKey, testText);
+		String actualHmacHashedValue = HttpSignUtils.hmacSha256Value(testSigningKey, testText);
 
 		assertEquals(expectedHmacHashedValue, actualHmacHashedValue);
 	}

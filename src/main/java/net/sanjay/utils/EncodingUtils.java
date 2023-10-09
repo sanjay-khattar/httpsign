@@ -8,6 +8,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
 /**
  * @author sanjaykdev
  *
@@ -18,25 +21,29 @@ public class EncodingUtils {
 
 	public static final String HEX_FORMAT = "%02x";
 
-	private EncodingUtils() {
+	private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+
+	private EncodingUtils() {}
+
+	public static String hex(byte[] bytes) {
+	    char[] hexChars = new char[bytes.length * 2];
+	    for (int j = 0; j < bytes.length; j++) {
+	        int v = bytes[j] & 0xFF;
+	        hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+	        hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+	    }
+	    return new String(hexChars);
 	}
 
-	public static final String hex(byte[] bytes) {
-		String hex = null;
 
-		if (bytes != null) {
-			StringBuilder sb = new StringBuilder();
-
-			for (byte b : bytes) {
-				sb.append(String.format(HEX_FORMAT, b & 0xff));
-			}
-
-			hex = sb.toString();
-		}
-
-		return hex;
-	}
-
+	/**
+	 * Calculates the hash digest of the given 'text'
+	 * using the 256 bit version of the Secure Hashing Algorithm (SHA).
+	 *
+	 * @param text
+	 *
+	 * @return
+	 */
 	public static final byte[] sha256(String text) {
 
 		byte[] sha256 = null;
@@ -53,11 +60,30 @@ public class EncodingUtils {
 		return sha256;
 	}
 
-	public static final byte[] hmacSha256(String key, String text) {
+	/**
+	 * Computes an HMAC of the given text'
+	 * by using the SHA256 algorithm with the 'secretKey' provided.
+	 *
+	 * @param secretKey
+	 * @param text
+	 *
+	 * @return
+	 */
+	public static final byte[] hmacSha256(String secretKey, String text) {
 		byte[] hmacSha256 = null;
 
-		if (text != null) {
-			hmacSha256 = sha256(text);
+		if ((secretKey != null) && (text != null)) {
+			String algorithm = "HmacSHA256";
+
+			try {
+				Mac mac = Mac.getInstance("HmacSHA256");
+				SecretKeySpec sks = new SecretKeySpec(
+						secretKey.getBytes(StandardCharsets.UTF_8), algorithm);
+				mac.init(sks);
+				hmacSha256 = mac.doFinal(text.getBytes(StandardCharsets.UTF_8));
+			} catch (Exception e) {
+				throw new EncodingException("Failed to generate HMAC-SHA256.", e);
+			}
 		}
 
 		return hmacSha256;
